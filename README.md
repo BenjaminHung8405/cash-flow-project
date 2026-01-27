@@ -31,8 +31,8 @@
 * **System:** Microsoft SQL Server
 * **Architecture:** Shared Database, Shared Schema (TenantId Isolation)
 
-```markdown
 ## 📂 Cấu trúc dự án
+```markdown
 ```text
 CashFlow.Solution/
 ├── CashFlow.API/           # Backend: Xử lý Logic, Auth, kết nối DB
