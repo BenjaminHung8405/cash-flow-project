@@ -1,3 +1,4 @@
+```markdown
 # CashFlow Pro - Hệ thống Quản lý Dòng tiền Doanh nghiệp (SaaS)
 
 ![.NET 8](https://img.shields.io/badge/.NET-8.0-purple)
@@ -32,7 +33,6 @@
 * **Architecture:** Shared Database, Shared Schema (TenantId Isolation)
 
 ## 📂 Cấu trúc dự án
-```markdown
 ```text
 CashFlow.Solution/
 ├── CashFlow.API/           # Backend: Xử lý Logic, Auth, kết nối DB
@@ -126,15 +126,4 @@ Dự án được phát triển phục vụ mục đích học tập môn Lập 
 
 * **Developer:** Phi Hùng
 * **Email:** (Email của bạn)
-
-```
-
----
-
-### Mẹo nhỏ để README đẹp hơn trên Github/Gitlab:
-Nếu sau này bạn đẩy code lên Git, bạn có thể chụp ảnh màn hình giao diện Swagger hoặc sơ đồ ERD Database rồi chèn vào file README bằng cú pháp:
-
 ```markdown
-![Sơ đồ Database](./docs/erd-diagram.png)
-
-```
