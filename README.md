@@ -1,4 +1,3 @@
-```markdown
 # CashFlow Pro - Hệ thống Quản lý Dòng tiền Doanh nghiệp (SaaS)
 
 ![.NET 8](https://img.shields.io/badge/.NET-8.0-purple)
@@ -32,8 +31,8 @@
 * **System:** Microsoft SQL Server
 * **Architecture:** Shared Database, Shared Schema (TenantId Isolation)
 
+```markdown
 ## 📂 Cấu trúc dự án
-
 ```text
 CashFlow.Solution/
 ├── CashFlow.API/           # Backend: Xử lý Logic, Auth, kết nối DB
