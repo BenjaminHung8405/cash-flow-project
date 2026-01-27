@@ -1,0 +1,53 @@
+## --- PHẦN 1: VISUAL STUDIO & .NET CORE (Áp dụng cho thư mục Solution) ---
+
+# Thư mục tạm và file cấu hình người dùng (User-specific)
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Kết quả Build (Quan trọng: Không up thư mục này lên)
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+bld/
+
+# NuGet Packages (Chỉ giữ lại file config, không giữ file gói nặng)
+*.nupkg
+**/packages/*
+!**/packages/build/
+
+# File cấu hình môi trường (Nên ignore để tránh lộ bí mật nếu public)
+# appsettings.Development.json
+# appsettings.Production.json
+
+## --- PHẦN 2: CÁC FILE RÁC HỆ THỐNG & OFFICE (Áp dụng cho tài liệu bên ngoài) ---
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# File tạm của Word/Excel (khi bạn mở tài liệu hướng dẫn)
+~$*.doc*
+~$*.xls*
+~$*.ppt*
+
+# Các file Log
+*.log
+
+# Visual Studio Code (Nếu bạn dùng để soạn thảo text/json bên ngoài)
+.vscode/
+
+## --- PHẦN 3: SQL SERVER (Nếu bạn lưu file backup DB ở ngoài) ---
+*.mdf
+*.ldf
+*.bak
+
+# Lưu ý: Vẫn cho phép file .sql (script) được upload
+!*.sql
