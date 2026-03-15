@@ -3,6 +3,7 @@ namespace CofferBank
     public partial class Form1 : Form
     {
         private DashboardControl? _dashboardControl;
+        private TransactionControl? _transactionControl;
         private FontAwesome.Sharp.IconButton? _selectedButton;
         private Color _selectedButtonColor = Color.FromArgb(37, 99, 235);
         private Color _unselectedButtonColor = Color.FromArgb(51, 65, 85);
@@ -10,7 +11,15 @@ namespace CofferBank
         public Form1()
         {
             InitializeComponent();
-            SelectButton(iconButton1);
+            InitializeUserControls();
+            SelectButton(dashboardBtn);
+        }
+
+        private void InitializeUserControls()
+        {
+            _dashboardControl = dashboardControl1;
+            _transactionControl = new TransactionControl();
+            _transactionControl.Dock = DockStyle.Top;
         }
 
         private void SelectButton(FontAwesome.Sharp.IconButton button)
@@ -26,26 +35,37 @@ namespace CofferBank
             button.BackColor = Color.FromArgb(226, 232, 240);
             button.ForeColor = _selectedButtonColor;
             button.IconColor = _selectedButtonColor;
+
+            // Switch user controls based on selected button
+            panel2.Controls.Clear();
+            if (button == dashboardBtn && _dashboardControl != null)
+            {
+                panel2.Controls.Add(_dashboardControl);
+            }
+            else if (button == transactionBtn && _transactionControl != null)
+            {
+                panel2.Controls.Add(_transactionControl);
+            }
         }
 
         private void iconButton1_Click(object sender, EventArgs e)
         {
-            SelectButton(iconButton1);
+            SelectButton(dashboardBtn);
         }
 
         private void iconButton2_Click(object sender, EventArgs e)
         {
-            SelectButton(iconButton2);
+            SelectButton(transactionBtn);
         }
 
         private void iconButton3_Click(object sender, EventArgs e)
         {
-            SelectButton(iconButton3);
+            SelectButton(accountBtn);
         }
 
         private void iconButton4_Click(object sender, EventArgs e)
         {
-            SelectButton(iconButton4);
+            SelectButton(settingBtn);
         }
 
         private void iconPictureBox1_Click(object sender, EventArgs e)
