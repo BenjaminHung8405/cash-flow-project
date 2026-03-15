@@ -39,6 +39,7 @@
             contentPanel = new Panel();
             tableLayoutPanel4 = new TableLayoutPanel();
             panel6 = new Panel();
+            panelChart = new Panel();
             panel7 = new Panel();
             label11 = new Label();
             panel2 = new Panel();
@@ -72,7 +73,6 @@
             panel5 = new Panel();
             label10 = new Label();
             label9 = new Label();
-            panelChart = new Panel();
             tableLayoutPanel1.SuspendLayout();
             panel1.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
@@ -261,6 +261,15 @@
             panel6.Name = "panel6";
             panel6.Size = new Size(316, 553);
             panel6.TabIndex = 3;
+            // 
+            // panelChart
+            // 
+            panelChart.AutoScroll = true;
+            panelChart.Dock = DockStyle.Fill;
+            panelChart.Location = new Point(0, 73);
+            panelChart.Name = "panelChart";
+            panelChart.Size = new Size(312, 476);
+            panelChart.TabIndex = 1;
             // 
             // panel7
             // 
@@ -759,14 +768,6 @@
             label9.Size = new Size(211, 32);
             label9.TabIndex = 1;
             label9.Text = "Giao dịch gần đây";
-            // 
-            // panelChart
-            // 
-            panelChart.Dock = DockStyle.Fill;
-            panelChart.Location = new Point(0, 73);
-            panelChart.Name = "panelChart";
-            panelChart.Size = new Size(312, 476);
-            panelChart.TabIndex = 1;
             // 
             // DashboardControl
             // 

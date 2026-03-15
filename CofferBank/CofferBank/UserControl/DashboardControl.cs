@@ -126,6 +126,8 @@ namespace CofferBank
                 LegendLocation = LegendLocation.Bottom
             };
 
+            pieChart.InnerRadius = 50;
+
             // Filter expenses and group by Type
             var expenseGroups = mockData
                 .Where(t => !t.IsIncome)
