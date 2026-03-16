@@ -15,7 +15,7 @@ namespace CashFlow.API.Data
     public class AppDbContext : DbContext
     {
         private readonly ITenantService _tenantService;
-
+        public Guid CurrentTenantId => GetCurrentTenantIdSafe();
         public AppDbContext(DbContextOptions<AppDbContext> options, ITenantService tenantService)
             : base(options)
         {
@@ -37,8 +37,7 @@ namespace CashFlow.API.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Get the current tenant ID for query filters
-            var currentTenantId = GetCurrentTenantIdSafe();
+         
 
             #region Entity Configuration
             // Configure RolePermission composite key
@@ -72,21 +71,12 @@ namespace CashFlow.API.Data
             #endregion
 
             #region Multi-Tenancy Global Query Filters
-            // Automatically filter all queries by current tenant
-            modelBuilder.Entity<User>()
-                .HasQueryFilter(x => x.TenantId == currentTenantId);
-
-            modelBuilder.Entity<Role>()
-                .HasQueryFilter(x => x.TenantId == currentTenantId);
-
-            modelBuilder.Entity<Fund>()
-                .HasQueryFilter(x => x.TenantId == currentTenantId);
-
-            modelBuilder.Entity<Transaction>()
-                .HasQueryFilter(x => x.TenantId == currentTenantId);
-
-            modelBuilder.Entity<AuditLog>()
-                .HasQueryFilter(x => x.TenantId == currentTenantId);
+            // ✅ Dùng property CurrentTenantId (Viết hoa chữ C)
+            modelBuilder.Entity<User>().HasQueryFilter(x => x.TenantId == CurrentTenantId);
+            modelBuilder.Entity<Role>().HasQueryFilter(x => x.TenantId == CurrentTenantId);
+            modelBuilder.Entity<Fund>().HasQueryFilter(x => x.TenantId == CurrentTenantId);
+            modelBuilder.Entity<Transaction>().HasQueryFilter(x => x.TenantId == CurrentTenantId);
+            modelBuilder.Entity<AuditLog>().HasQueryFilter(x => x.TenantId == CurrentTenantId);
             #endregion
 
             #region Seed Data
@@ -175,10 +165,7 @@ namespace CashFlow.API.Data
             if (auditLogs.Any())
             {
                 AuditLogs.AddRange(auditLogs);
-                foreach (var log in auditLogs)
-                {
-                    Entry(log).State = EntityState.Added;
-                }
+                
             }
         }
 

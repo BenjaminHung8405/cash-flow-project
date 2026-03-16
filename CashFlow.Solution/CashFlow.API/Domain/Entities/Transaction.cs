@@ -27,6 +27,9 @@ namespace CashFlow.API.Domain.Entities
         [MaxLength(255)]
         public string Description { get; set; }
 
+        [MaxLength(255)]
+        public string CategoryName { get; set; }
+
         public DateTime TransactionDate { get; set; }
     }
 }

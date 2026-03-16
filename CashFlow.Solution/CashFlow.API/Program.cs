@@ -19,6 +19,9 @@ builder.Services.AddMultiTenantDbContext(builder.Configuration);
 builder.Services.AddJwtAuthentication(builder.Configuration);
 builder.Services.AddCorsConfiguration();
 
+// Module services (Auth, Funds, Users, Roles, Transactions, etc.)
+builder.Services.AddModuleServices();
+
 // Core API services
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
