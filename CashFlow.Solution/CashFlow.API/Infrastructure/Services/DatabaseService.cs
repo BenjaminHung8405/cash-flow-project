@@ -1,7 +1,7 @@
 ﻿using System.Data;
 using System.Data.SqlClient;
 
-namespace CashFlow.API.Services
+namespace CashFlow.API.Infrastructure.Services
 {
     public class DatabaseService
     {

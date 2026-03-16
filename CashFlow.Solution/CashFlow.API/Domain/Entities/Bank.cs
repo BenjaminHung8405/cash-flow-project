@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CashFlow.API.Models
+namespace CashFlow.API.Domain.Entities
 {
     // DEPRECATED: This file is kept for backward compatibility only.
     // All new code should use entities from CashFlow.API.Domain.Entities namespace

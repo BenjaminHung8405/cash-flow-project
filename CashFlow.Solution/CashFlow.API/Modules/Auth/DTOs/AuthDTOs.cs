@@ -24,9 +24,9 @@ namespace CashFlow.API.Modules.Auth.DTOs
         public string Token { get; set; }
 
         /// <summary>
-        /// Tên đầy đủ của user (hiển thị trên UI)
+        /// Tên đầy đủ của tenant (hiển thị trên UI)
         /// </summary>
-        public string FullName { get; set; }
+        public string companyName { get; set; }
 
         /// <summary>
         /// Tên role của user (Admin, Manager, Staff, v.v.)
@@ -46,7 +46,7 @@ namespace CashFlow.API.Modules.Auth.DTOs
     {
         public string Username { get; set; }
         public string Password { get; set; }
-        public string FullName { get; set; }
+        public string companyName { get; set; }
         public string Email { get; set; }
     }
 
@@ -65,7 +65,7 @@ namespace CashFlow.API.Modules.Auth.DTOs
     {
         public string UserId { get; set; }
         public string Username { get; set; }
-        public string FullName { get; set; }
+        public string companyName { get; set; }
         public string Email { get; set; }
         public string Role { get; set; }
         public string TenantId { get; set; }

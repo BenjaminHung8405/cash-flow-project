@@ -3,6 +3,7 @@ using CashFlow.API.Domain.Entities;
 using CashFlow.API.Infrastructure.Services;
 using CashFlow.API.Modules.Funds.DTOs;
 using CashFlow.API.Modules.Funds.Interfaces;
+using Dapper;
 using Microsoft.EntityFrameworkCore;
 
 namespace CashFlow.API.Modules.Funds.Services
@@ -16,12 +17,14 @@ namespace CashFlow.API.Modules.Funds.Services
         private readonly AppDbContext _context;
         private readonly ITenantService _tenantService;
         private readonly ILogger<FundService> _logger;
+        private readonly DatabaseService _db;
 
-        public FundService(AppDbContext context, ITenantService tenantService, ILogger<FundService> logger)
+        public FundService(AppDbContext context, ITenantService tenantService, ILogger<FundService> logger, DatabaseService db)
         {
             _context = context;
             _tenantService = tenantService;
             _logger = logger;
+            _db = db;
         }
 
         /// <summary>
@@ -35,23 +38,14 @@ namespace CashFlow.API.Modules.Funds.Services
                 var currentTenantId = _tenantService.GetCurrentTenantId();
                 _logger.LogInformation($"Retrieving funds for tenant: {currentTenantId}");
 
-                var funds = await _context.Funds
-                    .AsNoTracking()
-                    .Where(f => f.IsActive)
-                    .OrderBy(f => f.FundName)
-                    .Select(f => new FundDto
-                    {
-                        Id = f.Id,
-                        FundName = f.FundName,
-                        FundType = f.FundType,
-                        AccountNumber = f.AccountNumber,
-                        CurrentBalance = f.CurrentBalance,
-                        IsActive = f.IsActive,
-                        CreatedAt = f.CreatedAt,
-                        CreatedBy = f.CreatedBy
-                    })
-                    .ToListAsync();
+                using var conn = _db.CreateConnection();
+                string sql = @"
+                    SELECT Id, FundName, FundType, AccountNumber, CurrentBalance, IsActive, CreatedAt, CreatedBy 
+                    FROM Funds 
+                    WHERE TenantId = @TenantId AND IsActive = 1 
+                    ORDER BY FundName";
 
+                var funds = await conn.QueryAsync<FundDto>(sql, new { TenantId = currentTenantId });
                 return funds;
             }
             catch (Exception ex)
@@ -68,22 +62,14 @@ namespace CashFlow.API.Modules.Funds.Services
         {
             try
             {
-                var fund = await _context.Funds
-                    .AsNoTracking()
-                    .Where(f => f.Id == id)
-                    .Select(f => new FundDto
-                    {
-                        Id = f.Id,
-                        FundName = f.FundName,
-                        FundType = f.FundType,
-                        AccountNumber = f.AccountNumber,
-                        CurrentBalance = f.CurrentBalance,
-                        IsActive = f.IsActive,
-                        CreatedAt = f.CreatedAt,
-                        CreatedBy = f.CreatedBy
-                    })
-                    .FirstOrDefaultAsync();
+                var currentTenantId = _tenantService.GetCurrentTenantId();
+                using var conn = _db.CreateConnection();
+                string sql = @"
+                    SELECT Id, FundName, FundType, AccountNumber, CurrentBalance, IsActive, CreatedAt, CreatedBy 
+                    FROM Funds 
+                    WHERE Id = @Id AND TenantId = @TenantId";
 
+                var fund = await conn.QueryFirstOrDefaultAsync<FundDto>(sql, new { Id = id, TenantId = currentTenantId });
                 return fund;
             }
             catch (Exception ex)
@@ -217,17 +203,15 @@ namespace CashFlow.API.Modules.Funds.Services
         {
             try
             {
-                var summary = await _context.Funds
-                    .Where(f => f.IsActive)
-                    .GroupBy(f => f.FundType)
-                    .Select(g => new FundSummaryDto
-                    {
-                        FundType = g.Key,
-                        Count = g.Count(),
-                        TotalBalance = g.Sum(f => f.CurrentBalance)
-                    })
-                    .ToListAsync();
+                var currentTenantId = _tenantService.GetCurrentTenantId();
+                using var conn = _db.CreateConnection();
+                string sql = @"
+                    SELECT FundType, COUNT(*) as Count, SUM(CurrentBalance) as TotalBalance 
+                    FROM Funds 
+                    WHERE TenantId = @TenantId AND IsActive = 1 
+                    GROUP BY FundType";
 
+                var summary = await conn.QueryAsync<FundSummaryDto>(sql, new { TenantId = currentTenantId });
                 return summary;
             }
             catch (Exception ex)
@@ -244,20 +228,15 @@ namespace CashFlow.API.Modules.Funds.Services
         {
             try
             {
-                var auditLogs = await _context.AuditLogs
-                    .Where(a => a.TableName == nameof(Fund) && a.RecordId == fundId.ToString())
-                    .OrderByDescending(a => a.Timestamp)
-                    .Select(a => new
-                    {
-                        a.Id,
-                        a.Action,
-                        a.UserId,
-                        a.Timestamp,
-                        OldValues = a.OldValues,
-                        NewValues = a.NewValues
-                    })
-                    .ToListAsync();
+                var currentTenantId = _tenantService.GetCurrentTenantId();
+                using var conn = _db.CreateConnection();
+                string sql = @"
+                    SELECT Id, Action, UserId, Timestamp, OldValues, NewValues 
+                    FROM AuditLogs 
+                    WHERE TableName = 'Fund' AND RecordId = @RecordId AND TenantId = @TenantId 
+                    ORDER BY Timestamp DESC";
 
+                var auditLogs = await conn.QueryAsync<dynamic>(sql, new { RecordId = fundId.ToString(), TenantId = currentTenantId });
                 return auditLogs;
             }
             catch (Exception ex)

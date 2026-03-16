@@ -1,6 +1,7 @@
 using CashFlow.API.Infrastructure.Services;
 using CashFlow.API.Modules.Auth.DTOs;
 using CashFlow.API.Modules.Auth.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CashFlow.API.Modules.Auth.Controllers
@@ -29,6 +30,7 @@ namespace CashFlow.API.Modules.Auth.Controllers
         /// </summary>
         /// <param name="request">LoginRequest: { Username, Password }</param>
         /// <returns>LoginResponse: { Token, FullName, Role }</returns>
+        [AllowAnonymous]
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
@@ -59,6 +61,7 @@ namespace CashFlow.API.Modules.Auth.Controllers
         /// <summary>
         /// Đăng ký user mới (nếu cần)
         /// </summary>
+        [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {

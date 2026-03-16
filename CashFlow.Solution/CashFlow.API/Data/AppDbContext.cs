@@ -141,13 +141,13 @@ namespace CashFlow.API.Data
                 // Only process BaseTenantEntity descendants
                 if (entry.Entity is BaseTenantEntity tenantEntity)
                 {
-                    // Inject TenantId for new entities
-                    if (entry.State == EntityState.Added)
+                    
+                    if (tenantEntity.TenantId == Guid.Empty)
                     {
                         tenantEntity.TenantId = currentTenantId;
-                        tenantEntity.CreatedAt = now;
-                        tenantEntity.CreatedBy = currentUserId ?? "System";
                     }
+                    tenantEntity.CreatedAt = now;
+                    tenantEntity.CreatedBy = string.IsNullOrEmpty(tenantEntity.CreatedBy) ? (currentUserId ?? "System") : tenantEntity.CreatedBy;
                 }
 
                 // Generate audit log for all changes

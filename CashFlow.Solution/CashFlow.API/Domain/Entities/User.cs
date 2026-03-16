@@ -19,6 +19,7 @@ namespace CashFlow.API.Domain.Entities
         [MaxLength(100)]
         public string Email { get; set; }
 
+
         public Guid RoleId { get; set; }
 
         [ForeignKey(nameof(RoleId))]

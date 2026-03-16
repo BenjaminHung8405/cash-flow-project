@@ -1,10 +1,11 @@
 using BCrypt.Net;
+using CashFlow.API.Data;
 using CashFlow.API.Domain.Entities;
 using CashFlow.API.Infrastructure.Services;
 using CashFlow.API.Modules.Auth.DTOs;
 using CashFlow.API.Modules.Auth.Interfaces;
-using CashFlow.API.Services;
 using Dapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -23,14 +24,94 @@ namespace CashFlow.API.Modules.Auth.Services
         private readonly DatabaseService _db;
         private readonly IConfiguration _config;
         private readonly ILogger<AuthService> _logger;
-
-        public AuthService(DatabaseService db, IConfiguration config, ILogger<AuthService> logger)
+        private readonly AppDbContext _efContext;
+        public AuthService(DatabaseService db, IConfiguration config, ILogger<AuthService> logger, AppDbContext efContext)
         {
             _db = db;
             _config = config;
             _logger = logger;
+            _efContext = efContext;
         }
+        public async Task<UserInfoDto> RegisterAsync(RegisterRequest request)
+        {
+            if (string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Password) || string.IsNullOrEmpty(request.companyName) || string.IsNullOrEmpty(request.Email))
+            {
+                throw new UnauthorizedAccessException("Username, password, email, and CompanyName are required.");
+            }
 
+            try
+            {
+            // Mở transaction bằng EF Core
+                using var transaction = await _efContext.Database.BeginTransactionAsync();
+                // Kiểm tra user có tồn tại không
+                var userExists = await _efContext.Users
+                    .IgnoreQueryFilters()
+                    .AnyAsync(u => u.Username == request.Username || u.Email == request.Email);
+
+                if (userExists)
+                {
+                    throw new Exception("Username or Email already exists.");
+                }
+
+                // 1. Tạo Tenant mới
+                var newTenantId = Guid.NewGuid();
+                var newTenant = new Tenant
+                {
+                    Id = newTenantId,
+                    CompanyName = request.companyName,
+                    IsActive = true
+                };
+                _efContext.Tenants.Add(newTenant);
+
+                // 2. Tạo Role "Admin" cho Tenant mới
+                var adminRoleId = Guid.NewGuid();
+                var adminRole = new Role
+                {
+                    Id = adminRoleId,
+                    TenantId = newTenantId,
+                    RoleName = "Admin",
+                    Description = "Tenant Administrator",
+                    IsActive = true
+                };
+                _efContext.Roles.Add(adminRole);
+
+                // 3. Tạo User và liên kết
+                var userId = Guid.NewGuid();
+                var newUser = new User
+                {
+                    Id = userId,
+                    TenantId = newTenantId,
+                    Username = request.Username,
+                    Email = request.Email,
+                    PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
+                    RoleId = adminRoleId,
+                    IsActive = true
+                };
+                _efContext.Users.Add(newUser);
+
+                // Lưu thay đổi vào DB
+                await _efContext.SaveChangesAsync();
+
+                // Commit transaction
+                await transaction.CommitAsync();
+
+                return new UserInfoDto
+                {
+                    UserId = userId.ToString(),
+                    Username = newUser.Username,
+                    Email = newUser.Email,
+                    companyName = newTenant.CompanyName,
+                    Role = adminRole.RoleName,
+                    TenantId = newTenantId.ToString()
+                };
+            }
+            catch (Exception ex)
+            {
+                //await transaction.RollbackAsync();
+                _logger.LogError($"Lỗi đăng ký user: {ex.Message}");
+                throw;
+            }
+        }
         /// <summary>
         /// Đăng nhập: 
         /// 1. Kiểm tra username/password trong DB
@@ -52,9 +133,10 @@ namespace CashFlow.API.Modules.Auth.Services
                 using (var conn = _db.CreateConnection())
                 {
                     string sql = @"
-                        SELECT u.UserId, u.TenantId, u.BranchId, u.FullName, u.Username, u.PasswordHash, r.RoleName 
+                        SELECT u.Id, u.TenantId, t.CompanyName, u.Username, u.PasswordHash, r.RoleName 
                         FROM Users u
-                        LEFT JOIN Roles r ON u.RoleId = r.RoleId
+                        LEFT JOIN Roles r ON u.RoleId = r.Id
+                        LEFT JOIN Tenants t ON u.TenantId = t.Id
                         WHERE u.Username = @Username AND u.IsActive = 1";
 
                     var user = await conn.QueryFirstOrDefaultAsync<dynamic>(sql, new
@@ -83,7 +165,7 @@ namespace CashFlow.API.Modules.Auth.Services
                     var response = new LoginResponse
                     {
                         Token = token,
-                        FullName = user.FullName,
+                        companyName = user.CompanyName,
                         Role = user.RoleName ?? "User",
                         TenantId = user.TenantId.ToString()
                     };
@@ -103,10 +185,7 @@ namespace CashFlow.API.Modules.Auth.Services
             }
         }
 
-        public async Task<UserInfoDto> RegisterAsync(RegisterRequest request)
-        {
-            throw new NotImplementedException("Register feature chưa được implement");
-        }
+
 
         public async Task<LoginResponse> RefreshTokenAsync(string oldToken)
         {
@@ -120,10 +199,11 @@ namespace CashFlow.API.Modules.Auth.Services
                 using (var conn = _db.CreateConnection())
                 {
                     string sql = @"
-                        SELECT u.UserId, u.Username, u.FullName, u.Email, u.TenantId, r.RoleName as Role
+                        SELECT u.Id as UserId, u.Username, t.CompanyName as companyName, u.Email, u.TenantId, r.RoleName as Role
                         FROM Users u
-                        LEFT JOIN Roles r ON u.RoleId = r.RoleId
-                        WHERE u.UserId = @UserId";
+                        LEFT JOIN Roles r ON u.RoleId = r.Id
+                        LEFT JOIN Tenants t ON u.TenantId = t.Id
+                        WHERE u.Id = @UserId";
 
                     var user = await conn.QueryFirstOrDefaultAsync<UserInfoDto>(sql, new { UserId = userId });
 
@@ -161,12 +241,10 @@ namespace CashFlow.API.Modules.Auth.Services
 
             var claims = new[]
             {
-                new Claim("UserId", user.UserId.ToString()),
+                new Claim("UserId", user.Id.ToString()),
                 new Claim("TenantId", user.TenantId.ToString()),
-                new Claim("BranchId", user.BranchId?.ToString() ?? ""),
                 new Claim(ClaimTypes.Role, user.RoleName ?? "User"),
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim("FullName", user.FullName)
+                new Claim(ClaimTypes.Name, user.Username)
             };
 
             var token = new JwtSecurityToken(

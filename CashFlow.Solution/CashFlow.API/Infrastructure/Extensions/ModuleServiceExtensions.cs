@@ -21,8 +21,11 @@ namespace CashFlow.API.Infrastructure.Extensions
             // Funds Module Services
             services.AddScoped<IFundService, FundService>();
 
+            // Transactions Module Services
+            services.AddScoped<CashFlow.API.Modules.Transactions.Interfaces.ITransactionService, CashFlow.API.Modules.Transactions.Services.TransactionService>();
+
             // TODO: Thêm các module khác
-            // Users, Roles, Transactions, v.v.
+            // Users, Roles, v.v.
 
             return services;
         }

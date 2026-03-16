@@ -167,7 +167,7 @@ dotnet run --project CashFlow.API
 ### Step 3: Test API (Swagger UI)
 
 ```
-https://localhost:5001/swagger
+https://localhost:7071/swagger
 ```
 
 ---

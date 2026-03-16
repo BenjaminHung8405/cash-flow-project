@@ -1,7 +1,8 @@
-﻿using CashFlow.API.Data;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using CashFlow.API.Data;
 using CashFlow.API.Infrastructure.Extensions;
 using CashFlow.API.Infrastructure.Services;
-using CashFlow.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -23,7 +24,13 @@ builder.Services.AddCorsConfiguration();
 builder.Services.AddModuleServices();
 
 // Core API services
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    var policy = new AuthorizationPolicyBuilder()
+                     .RequireAuthenticatedUser()
+                     .Build();
+    options.Filters.Add(new AuthorizeFilter(policy));
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<DatabaseService>();
