@@ -39,6 +39,8 @@
             panel3 = new Panel();
             txtNote = new TextBox();
             dtpDate = new DateTimePicker();
+            chkIsDebt = new CheckBox();
+            txtCustomerName = new TextBox();
             tableLayoutPanel6 = new TableLayoutPanel();
             btn0 = new Button();
             btnDot = new Button();
@@ -52,7 +54,12 @@
             btn2 = new Button();
             btn1 = new Button();
             btnBackspace = new FontAwesome.Sharp.IconButton();
-            flpCategories = new FlowLayoutPanel();
+            tableLayoutPanel7 = new TableLayoutPanel();
+            btnCatOtherExpense = new FontAwesome.Sharp.IconButton();
+            btnCatOpEx = new FontAwesome.Sharp.IconButton();
+            btnCatCOGS = new FontAwesome.Sharp.IconButton();
+            btnCatOtherIncome = new FontAwesome.Sharp.IconButton();
+            btnCatRevenue = new FontAwesome.Sharp.IconButton();
             PanelToggle = new Panel();
             tableLayoutPanel3 = new TableLayoutPanel();
             lblAmount = new Panel();
@@ -67,6 +74,7 @@
             tableLayoutPanel5.SuspendLayout();
             panel3.SuspendLayout();
             tableLayoutPanel6.SuspendLayout();
+            tableLayoutPanel7.SuspendLayout();
             PanelToggle.SuspendLayout();
             tableLayoutPanel3.SuspendLayout();
             lblAmount.SuspendLayout();
@@ -88,7 +96,7 @@
             tableLayoutPanel1.RowCount = 2;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 82F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 33F));
-            tableLayoutPanel1.Size = new Size(913, 619);
+            tableLayoutPanel1.Size = new Size(913, 647);
             tableLayoutPanel1.TabIndex = 2;
             // 
             // panel1
@@ -179,7 +187,7 @@
             // 
             contentPanel.BorderStyle = BorderStyle.Fixed3D;
             contentPanel.Controls.Add(tableLayoutPanel5);
-            contentPanel.Controls.Add(flpCategories);
+            contentPanel.Controls.Add(tableLayoutPanel7);
             contentPanel.Controls.Add(PanelToggle);
             contentPanel.Dock = DockStyle.Fill;
             contentPanel.ForeColor = Color.White;
@@ -187,7 +195,7 @@
             contentPanel.Margin = new Padding(4, 5, 4, 5);
             contentPanel.Name = "contentPanel";
             contentPanel.Padding = new Padding(16);
-            contentPanel.Size = new Size(905, 527);
+            contentPanel.Size = new Size(905, 555);
             contentPanel.TabIndex = 2;
             // 
             // tableLayoutPanel5
@@ -199,20 +207,23 @@
             tableLayoutPanel5.Controls.Add(panel3, 0, 0);
             tableLayoutPanel5.Controls.Add(tableLayoutPanel6, 1, 0);
             tableLayoutPanel5.Dock = DockStyle.Top;
-            tableLayoutPanel5.Location = new Point(16, 202);
+            tableLayoutPanel5.Location = new Point(16, 246);
             tableLayoutPanel5.Name = "tableLayoutPanel5";
             tableLayoutPanel5.RowCount = 1;
             tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel5.Size = new Size(869, 293);
-            tableLayoutPanel5.TabIndex = 3;
+            tableLayoutPanel5.TabIndex = 6;
             // 
             // panel3
             // 
             panel3.Controls.Add(txtNote);
             panel3.Controls.Add(dtpDate);
+            panel3.Controls.Add(chkIsDebt);
+            panel3.Controls.Add(txtCustomerName);
             panel3.Dock = DockStyle.Fill;
             panel3.Location = new Point(3, 3);
             panel3.Name = "panel3";
+            panel3.Padding = new Padding(16);
             panel3.Size = new Size(428, 287);
             panel3.TabIndex = 5;
             // 
@@ -220,22 +231,45 @@
             // 
             txtNote.BorderStyle = BorderStyle.None;
             txtNote.Dock = DockStyle.Top;
-            txtNote.Location = new Point(0, 31);
+            txtNote.Location = new Point(16, 107);
             txtNote.Multiline = true;
             txtNote.Name = "txtNote";
             txtNote.PlaceholderText = "Thêm ghi chú...";
-            txtNote.Size = new Size(428, 257);
-            txtNote.TabIndex = 5;
+            txtNote.Size = new Size(396, 162);
+            txtNote.TabIndex = 9;
             // 
             // dtpDate
             // 
             dtpDate.Dock = DockStyle.Top;
             dtpDate.Format = DateTimePickerFormat.Short;
-            dtpDate.Location = new Point(0, 0);
+            dtpDate.Location = new Point(16, 76);
             dtpDate.Margin = new Padding(8, 4, 8, 4);
             dtpDate.Name = "dtpDate";
-            dtpDate.Size = new Size(428, 31);
-            dtpDate.TabIndex = 4;
+            dtpDate.Size = new Size(396, 31);
+            dtpDate.TabIndex = 8;
+            // 
+            // chkIsDebt
+            // 
+            chkIsDebt.AutoSize = true;
+            chkIsDebt.Dock = DockStyle.Top;
+            chkIsDebt.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            chkIsDebt.ForeColor = Color.FromArgb(51, 51, 51);
+            chkIsDebt.Location = new Point(16, 47);
+            chkIsDebt.Name = "chkIsDebt";
+            chkIsDebt.Size = new Size(396, 29);
+            chkIsDebt.TabIndex = 7;
+            chkIsDebt.Text = "Chưa thanh toán (Ghi công nợ)";
+            chkIsDebt.UseVisualStyleBackColor = true;
+            // 
+            // txtCustomerName
+            // 
+            txtCustomerName.BorderStyle = BorderStyle.FixedSingle;
+            txtCustomerName.Dock = DockStyle.Top;
+            txtCustomerName.Location = new Point(16, 16);
+            txtCustomerName.Name = "txtCustomerName";
+            txtCustomerName.PlaceholderText = "Tên Khách hàng (Bắt buộc nếu ghi nợ)...";
+            txtCustomerName.Size = new Size(396, 31);
+            txtCustomerName.TabIndex = 6;
             // 
             // tableLayoutPanel6
             // 
@@ -293,7 +327,6 @@
             btnDot.TabIndex = 9;
             btnDot.Text = ".";
             btnDot.UseVisualStyleBackColor = false;
-            btnDot.Click += BtnDot_Click;
             // 
             // btn9
             // 
@@ -433,19 +466,126 @@
             btnBackspace.Size = new Size(139, 68);
             btnBackspace.TabIndex = 11;
             btnBackspace.UseVisualStyleBackColor = false;
-            btnBackspace.Click += BtnBackspace_Click;
             // 
-            // flpCategories
+            // tableLayoutPanel7
             // 
-            flpCategories.AutoScroll = true;
-            flpCategories.Dock = DockStyle.Top;
-            flpCategories.Location = new Point(16, 96);
-            flpCategories.Margin = new Padding(3, 16, 3, 3);
-            flpCategories.Name = "flpCategories";
-            flpCategories.Padding = new Padding(0, 0, 0, 16);
-            flpCategories.Size = new Size(869, 106);
-            flpCategories.TabIndex = 2;
-            flpCategories.WrapContents = false;
+            tableLayoutPanel7.ColumnCount = 3;
+            tableLayoutPanel7.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel7.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel7.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel7.Controls.Add(btnCatOtherExpense, 1, 1);
+            tableLayoutPanel7.Controls.Add(btnCatOpEx, 0, 1);
+            tableLayoutPanel7.Controls.Add(btnCatOtherIncome, 1, 0);
+            tableLayoutPanel7.Controls.Add(btnCatRevenue, 0, 0);
+            tableLayoutPanel7.Controls.Add(btnCatCOGS, 2, 1);
+            tableLayoutPanel7.Dock = DockStyle.Top;
+            tableLayoutPanel7.Location = new Point(16, 96);
+            tableLayoutPanel7.Name = "tableLayoutPanel7";
+            tableLayoutPanel7.RowCount = 2;
+            tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel7.Size = new Size(869, 150);
+            tableLayoutPanel7.TabIndex = 4;
+            // 
+            // btnCatOtherExpense
+            // 
+            btnCatOtherExpense.BackColor = Color.White;
+            btnCatOtherExpense.Dock = DockStyle.Fill;
+            btnCatOtherExpense.Font = new Font("Segoe UI", 8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnCatOtherExpense.ForeColor = Color.FromArgb(51, 51, 51);
+            btnCatOtherExpense.IconChar = FontAwesome.Sharp.IconChar.EllipsisH;
+            btnCatOtherExpense.IconColor = Color.FromArgb(51, 51, 51);
+            btnCatOtherExpense.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            btnCatOtherExpense.IconSize = 32;
+            btnCatOtherExpense.ImageAlign = ContentAlignment.MiddleLeft;
+            btnCatOtherExpense.Location = new Point(321, 91);
+            btnCatOtherExpense.Margin = new Padding(32, 16, 32, 16);
+            btnCatOtherExpense.Name = "btnCatOtherExpense";
+            btnCatOtherExpense.Padding = new Padding(16, 0, 16, 0);
+            btnCatOtherExpense.Size = new Size(225, 43);
+            btnCatOtherExpense.TabIndex = 4;
+            btnCatOtherExpense.Text = "Chi khác";
+            btnCatOtherExpense.UseVisualStyleBackColor = false;
+            // 
+            // btnCatOpEx
+            // 
+            btnCatOpEx.BackColor = Color.White;
+            btnCatOpEx.Dock = DockStyle.Fill;
+            btnCatOpEx.Font = new Font("Segoe UI", 8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnCatOpEx.ForeColor = Color.FromArgb(51, 51, 51);
+            btnCatOpEx.IconChar = FontAwesome.Sharp.IconChar.FileInvoiceDollar;
+            btnCatOpEx.IconColor = Color.FromArgb(51, 51, 51);
+            btnCatOpEx.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            btnCatOpEx.IconSize = 32;
+            btnCatOpEx.ImageAlign = ContentAlignment.MiddleLeft;
+            btnCatOpEx.Location = new Point(32, 91);
+            btnCatOpEx.Margin = new Padding(32, 16, 32, 16);
+            btnCatOpEx.Name = "btnCatOpEx";
+            btnCatOpEx.Padding = new Padding(16, 0, 16, 0);
+            btnCatOpEx.Size = new Size(225, 43);
+            btnCatOpEx.TabIndex = 3;
+            btnCatOpEx.Text = "Chi phí VH";
+            btnCatOpEx.UseVisualStyleBackColor = false;
+            // 
+            // btnCatCOGS
+            // 
+            btnCatCOGS.BackColor = Color.White;
+            btnCatCOGS.Dock = DockStyle.Fill;
+            btnCatCOGS.Font = new Font("Segoe UI", 8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnCatCOGS.ForeColor = Color.FromArgb(51, 51, 51);
+            btnCatCOGS.IconChar = FontAwesome.Sharp.IconChar.BoxesStacked;
+            btnCatCOGS.IconColor = Color.FromArgb(51, 51, 51);
+            btnCatCOGS.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            btnCatCOGS.IconSize = 32;
+            btnCatCOGS.ImageAlign = ContentAlignment.MiddleLeft;
+            btnCatCOGS.Location = new Point(610, 91);
+            btnCatCOGS.Margin = new Padding(32, 16, 32, 16);
+            btnCatCOGS.Name = "btnCatCOGS";
+            btnCatCOGS.Padding = new Padding(16, 0, 16, 0);
+            btnCatCOGS.Size = new Size(227, 43);
+            btnCatCOGS.TabIndex = 2;
+            btnCatCOGS.Text = "Nhập hàng";
+            btnCatCOGS.UseVisualStyleBackColor = false;
+            // 
+            // btnCatOtherIncome
+            // 
+            btnCatOtherIncome.BackColor = Color.White;
+            btnCatOtherIncome.Dock = DockStyle.Fill;
+            btnCatOtherIncome.Font = new Font("Segoe UI", 8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnCatOtherIncome.ForeColor = Color.FromArgb(51, 51, 51);
+            btnCatOtherIncome.IconChar = FontAwesome.Sharp.IconChar.HandHoldingUsd;
+            btnCatOtherIncome.IconColor = Color.FromArgb(51, 51, 51);
+            btnCatOtherIncome.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            btnCatOtherIncome.IconSize = 32;
+            btnCatOtherIncome.ImageAlign = ContentAlignment.MiddleLeft;
+            btnCatOtherIncome.Location = new Point(321, 16);
+            btnCatOtherIncome.Margin = new Padding(32, 16, 32, 16);
+            btnCatOtherIncome.Name = "btnCatOtherIncome";
+            btnCatOtherIncome.Padding = new Padding(16, 0, 16, 0);
+            btnCatOtherIncome.Size = new Size(225, 43);
+            btnCatOtherIncome.TabIndex = 1;
+            btnCatOtherIncome.Text = "Thu khác";
+            btnCatOtherIncome.UseVisualStyleBackColor = false;
+            // 
+            // btnCatRevenue
+            // 
+            btnCatRevenue.BackColor = Color.White;
+            btnCatRevenue.Dock = DockStyle.Fill;
+            btnCatRevenue.Font = new Font("Segoe UI", 8F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            btnCatRevenue.ForeColor = Color.FromArgb(51, 51, 51);
+            btnCatRevenue.IconChar = FontAwesome.Sharp.IconChar.Store;
+            btnCatRevenue.IconColor = Color.FromArgb(51, 51, 51);
+            btnCatRevenue.IconFont = FontAwesome.Sharp.IconFont.Auto;
+            btnCatRevenue.IconSize = 32;
+            btnCatRevenue.ImageAlign = ContentAlignment.MiddleLeft;
+            btnCatRevenue.Location = new Point(32, 16);
+            btnCatRevenue.Margin = new Padding(32, 16, 32, 16);
+            btnCatRevenue.Name = "btnCatRevenue";
+            btnCatRevenue.Padding = new Padding(16, 0, 16, 0);
+            btnCatRevenue.Size = new Size(225, 43);
+            btnCatRevenue.TabIndex = 0;
+            btnCatRevenue.Text = "Doanh thu";
+            btnCatRevenue.UseVisualStyleBackColor = false;
             // 
             // PanelToggle
             // 
@@ -552,7 +692,7 @@
             // 
             AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(913, 619);
+            ClientSize = new Size(913, 647);
             Controls.Add(tableLayoutPanel1);
             FormBorderStyle = FormBorderStyle.None;
             Name = "AddTransactionForm";
@@ -567,6 +707,7 @@
             panel3.ResumeLayout(false);
             panel3.PerformLayout();
             tableLayoutPanel6.ResumeLayout(false);
+            tableLayoutPanel7.ResumeLayout(false);
             PanelToggle.ResumeLayout(false);
             tableLayoutPanel3.ResumeLayout(false);
             lblAmount.ResumeLayout(false);
@@ -590,11 +731,10 @@
         private TableLayoutPanel tableLayoutPanel4;
         private Button btnIncome;
         private Button btnExpense;
+        private Label lbCurrency;
+        private TableLayoutPanel tableLayoutPanel7;
         private TableLayoutPanel tableLayoutPanel5;
-        private FlowLayoutPanel flpCategories;
         private Panel panel3;
-        private TextBox txtNote;
-        private DateTimePicker dtpDate;
         private TableLayoutPanel tableLayoutPanel6;
         private Button btn0;
         private Button btnDot;
@@ -608,6 +748,14 @@
         private Button btn2;
         private Button btn1;
         private FontAwesome.Sharp.IconButton btnBackspace;
-        private Label lbCurrency;
+        private FontAwesome.Sharp.IconButton btnCatRevenue;
+        private FontAwesome.Sharp.IconButton btnCatOtherExpense;
+        private FontAwesome.Sharp.IconButton btnCatOpEx;
+        private FontAwesome.Sharp.IconButton btnCatCOGS;
+        private FontAwesome.Sharp.IconButton btnCatOtherIncome;
+        private TextBox txtCustomerName;
+        private CheckBox chkIsDebt;
+        private TextBox txtNote;
+        private DateTimePicker dtpDate;
     }
 }

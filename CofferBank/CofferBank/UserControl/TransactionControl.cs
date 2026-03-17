@@ -147,12 +147,12 @@ namespace CofferBank
                 if (form.ShowDialog() == DialogResult.OK)
                 {
                     var newTransaction = (
-                        Title: form.CategoryName,
-                        Type: form.CategoryName,
-                        Date: form.TransactionDate,
+                        Title: form.Category,
+                        Type: form.Category,
+                        Date: form.Date,
                         Amount: form.Amount,
                         IsIncome: form.IsIncome,
-                        Icon: form.CategoryIcon
+                        Icon: form.Icon
                     );
 
                     _allTransactions.Add(newTransaction);

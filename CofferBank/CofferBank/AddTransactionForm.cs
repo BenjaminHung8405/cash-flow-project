@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using FontAwesome.Sharp;
 
 namespace CofferBank
 {
@@ -12,22 +13,24 @@ namespace CofferBank
     {
         private string _currentInput = "0";
         private bool _isIncome = false;
-        private string _selectedCategoryName = string.Empty;
-        private FontAwesome.Sharp.IconChar _selectedCategoryIcon;
+        private string _selectedCategory = "";
+        private IconChar _selectedIcon = IconChar.None;
         private FontAwesome.Sharp.IconButton? _selectedCategoryButton;
 
         public decimal Amount { get; private set; }
+        public string Category { get; private set; }
         public bool IsIncome { get; private set; }
-        public DateTime TransactionDate { get; private set; }
+        public bool IsDebt { get; private set; }
+        public string CustomerName { get; private set; }
+        public DateTime Date { get; private set; }
         public string Note { get; private set; }
-        public string CategoryName { get; private set; }
-        public FontAwesome.Sharp.IconChar CategoryIcon { get; private set; }
+        public string Status { get; private set; }
+        public IconChar Icon { get; private set; }
 
         public AddTransactionForm()
         {
             InitializeComponent();
             InitializeEventHandlers();
-            InitializeForm();
         }
 
         private void InitializeEventHandlers()
@@ -50,41 +53,30 @@ namespace CofferBank
             btnIncome.Click += BtnIncome_Click;
             btnExpense.Click += BtnExpense_Click;
 
+            // Category buttons - Income
+            btnCatRevenue.Click += (s, e) => CategoryButton_Click(btnCatRevenue, "Doanh thu bán hàng", IconChar.Store);
+            btnCatOtherIncome.Click += (s, e) => CategoryButton_Click(btnCatOtherIncome, "Khác", IconChar.Briefcase);
+
+            // Category buttons - Expense
+            btnCatCOGS.Click += (s, e) => CategoryButton_Click(btnCatCOGS, "Nhập hàng hóa", IconChar.Boxes);
+            btnCatOpEx.Click += (s, e) => CategoryButton_Click(btnCatOpEx, "Chi phí hoạt động", IconChar.Coins);
+            btnCatOtherExpense.Click += (s, e) => CategoryButton_Click(btnCatOtherExpense, "Khác", IconChar.EllipsisH);
+
             // Action buttons
             btnSave.Click += BtnSave_Click;
             btnCancel.Click += BtnCancel_Click;
+
+            // Form load
+            Load += AddTransactionForm_Load;
         }
 
-        private void InitializeForm()
+        private void AddTransactionForm_Load(object? sender, EventArgs e)
         {
-            SetupModernUI();
             _isIncome = false;
-            UpdateToggleButtonAppearance();
-            LoadCategories(false);
             dtpDate.Value = DateTime.Now;
             dtpDate.Format = DateTimePickerFormat.Short;
-            UpdateAmountLabel();
-        }
-
-        private void SetupModernUI()
-        {
-            // Style numpad buttons (0-9, dot)
-            var numpadButtons = new[] { btn0, btn1, btn2, btn3, btn4, btn5, btn6, btn7, btn8, btn9, btnDot };
-
-            foreach (var btn in numpadButtons)
-            {
-                btn.FlatStyle = FlatStyle.Flat;
-                btn.FlatAppearance.BorderSize = 0;
-                btn.BackColor = Color.White;
-                btn.Cursor = Cursors.Hand;
-                btn.Font = new Font("Segoe UI", 16F, FontStyle.Bold);
-                btn.FlatAppearance.MouseOverBackColor = Color.FromArgb(240, 240, 240);
-                btn.FlatAppearance.MouseDownBackColor = Color.FromArgb(220, 220, 220);
-            }
-
-            // Style note input textbox
-            txtNote.BorderStyle = BorderStyle.None;
-            txtNote.Font = new Font("Segoe UI", 11F);
+            UpdateAmountDisplay();
+            ToggleTransactionType(false);
         }
 
         #region Numpad Logic
@@ -96,7 +88,6 @@ namespace CofferBank
 
             string digit = btn.Text;
 
-            // Handle leading zeros
             if (_currentInput == "0" && digit != ".")
             {
                 _currentInput = digit;
@@ -106,7 +97,7 @@ namespace CofferBank
                 _currentInput += digit;
             }
 
-            UpdateAmountLabel();
+            UpdateAmountDisplay();
         }
 
         private void BtnDot_Click(object? sender, EventArgs e)
@@ -114,7 +105,7 @@ namespace CofferBank
             if (!_currentInput.Contains("."))
             {
                 _currentInput += ".";
-                UpdateAmountLabel();
+                UpdateAmountDisplay();
             }
         }
 
@@ -129,19 +120,19 @@ namespace CofferBank
                 _currentInput = "0";
             }
 
-            UpdateAmountLabel();
+            UpdateAmountDisplay();
         }
 
-        private void UpdateAmountLabel()
+        private void UpdateAmountDisplay()
         {
             if (decimal.TryParse(_currentInput, out decimal amount))
             {
                 string formatted = amount % 1 == 0 ? amount.ToString("N0") : amount.ToString("N2");
-                lbCurrency.Text = formatted + " VNĐ";
+                lbCurrency.Text = formatted + " đ";
             }
             else
             {
-                lbCurrency.Text = "0 VNĐ";
+                lbCurrency.Text = "0 đ";
             }
         }
 
@@ -152,25 +143,33 @@ namespace CofferBank
         private void BtnIncome_Click(object? sender, EventArgs e)
         {
             _isIncome = true;
-            UpdateToggleButtonAppearance();
-            LoadCategories(true);
+            ToggleTransactionType(true);
         }
 
         private void BtnExpense_Click(object? sender, EventArgs e)
         {
             _isIncome = false;
-            UpdateToggleButtonAppearance();
-            LoadCategories(false);
+            ToggleTransactionType(false);
         }
 
-        private void UpdateToggleButtonAppearance()
+        private void ToggleTransactionType(bool isIncome)
         {
-            if (_isIncome)
+            _selectedCategory = "";
+            _selectedIcon = IconChar.None;
+            _selectedCategoryButton = null;
+
+            if (isIncome)
             {
                 btnIncome.BackColor = Color.FromArgb(5, 150, 105);
                 btnIncome.Font = new Font(btnIncome.Font, FontStyle.Bold);
                 btnExpense.BackColor = Color.FromArgb(200, 200, 200);
                 btnExpense.Font = new Font(btnExpense.Font, FontStyle.Regular);
+
+                btnCatRevenue.Visible = true;
+                btnCatOtherIncome.Visible = true;
+                btnCatCOGS.Visible = false;
+                btnCatOpEx.Visible = false;
+                btnCatOtherExpense.Visible = false;
             }
             else
             {
@@ -178,77 +177,22 @@ namespace CofferBank
                 btnExpense.Font = new Font(btnExpense.Font, FontStyle.Bold);
                 btnIncome.BackColor = Color.FromArgb(200, 200, 200);
                 btnIncome.Font = new Font(btnIncome.Font, FontStyle.Regular);
+
+                btnCatRevenue.Visible = false;
+                btnCatOtherIncome.Visible = false;
+                btnCatCOGS.Visible = true;
+                btnCatOpEx.Visible = true;
+                btnCatOtherExpense.Visible = true;
             }
+
+            ResetCategoryButtonStyles();
         }
 
         #endregion
 
-        #region Categories
+        #region Category Selection
 
-        private void LoadCategories(bool isIncome)
-        {
-            flpCategories.Controls.Clear();
-            _selectedCategoryButton = null;
-            _selectedCategoryName = string.Empty;
-
-            List<(string Name, FontAwesome.Sharp.IconChar Icon)> categories;
-
-            if (isIncome)
-            {
-                categories = new List<(string, FontAwesome.Sharp.IconChar)>
-                {
-                    ("Tiền lương", FontAwesome.Sharp.IconChar.MoneyBill),
-                    ("Bán hàng", FontAwesome.Sharp.IconChar.Store),
-                    ("Tiền gửi", FontAwesome.Sharp.IconChar.PiggyBank),
-                    ("Hoàn tiền", FontAwesome.Sharp.IconChar.Percent),
-                    ("Khác", FontAwesome.Sharp.IconChar.Briefcase)
-                };
-            }
-            else
-            {
-                categories = new List<(string, FontAwesome.Sharp.IconChar)>
-                {
-                    ("Ăn uống", FontAwesome.Sharp.IconChar.Utensils),
-                    ("Xăng xe", FontAwesome.Sharp.IconChar.GasPump),
-                    ("Mua sắm", FontAwesome.Sharp.IconChar.ShoppingBag),
-                    ("Giải trí", FontAwesome.Sharp.IconChar.Gamepad),
-                    ("Nhà ở", FontAwesome.Sharp.IconChar.Home),
-                    ("Y tế", FontAwesome.Sharp.IconChar.HeartPulse),
-                    ("Giáo dục", FontAwesome.Sharp.IconChar.BookOpen),
-                    ("Khác", FontAwesome.Sharp.IconChar.EllipsisH)
-                };
-            }
-
-            foreach (var category in categories)
-            {
-                var btn = new FontAwesome.Sharp.IconButton
-                {
-                    IconChar = category.Icon,
-                    IconColor = Color.FromArgb(100, 100, 100),
-                    IconFont = FontAwesome.Sharp.IconFont.Auto,
-                    IconSize = 32,
-                    FlatStyle = FlatStyle.Flat,
-                    BackColor = Color.White,
-                    Width = 140,
-                    Height = 60,
-                    Tag = category.Name,
-                    Text = category.Name,
-                    TextAlign = ContentAlignment.BottomCenter,
-                    ImageAlign = ContentAlignment.TopCenter,
-                    Font = new Font("Segoe UI", 9F),
-                    ForeColor = Color.FromArgb(51, 51, 51),
-                    Margin = new Padding(4)
-                };
-
-                btn.FlatAppearance.BorderSize = 0;
-
-                btn.Click += (s, e) => CategoryButton_Click(btn, category.Name, category.Icon);
-
-                flpCategories.Controls.Add(btn);
-            }
-        }
-
-        private void CategoryButton_Click(FontAwesome.Sharp.IconButton btn, string categoryName, FontAwesome.Sharp.IconChar icon)
+        private void CategoryButton_Click(IconButton btn, string categoryName, IconChar icon)
         {
             // Deselect previous category
             if (_selectedCategoryButton != null)
@@ -259,11 +203,24 @@ namespace CofferBank
 
             // Select new category
             _selectedCategoryButton = btn;
-            _selectedCategoryName = categoryName;
-            _selectedCategoryIcon = icon;
+            _selectedCategory = categoryName;
+            _selectedIcon = icon;
+
             btn.BackColor = Color.FromArgb(226, 232, 240);
             btn.FlatAppearance.BorderColor = Color.FromArgb(37, 99, 235);
             btn.IconColor = Color.FromArgb(37, 99, 235);
+        }
+
+        private void ResetCategoryButtonStyles()
+        {
+            var allCategoryButtons = new[] { btnCatRevenue, btnCatOtherIncome, btnCatCOGS, btnCatOpEx, btnCatOtherExpense };
+
+            foreach (var btn in allCategoryButtons)
+            {
+                btn.BackColor = Color.White;
+                btn.IconColor = Color.FromArgb(100, 100, 100);
+                btn.FlatAppearance.BorderSize = 0;
+            }
         }
 
         #endregion
@@ -276,11 +233,14 @@ namespace CofferBank
                 return;
 
             Amount = decimal.Parse(_currentInput);
+            Category = _selectedCategory;
             IsIncome = _isIncome;
-            TransactionDate = dtpDate.Value;
+            IsDebt = chkIsDebt.Checked;
+            CustomerName = txtCustomerName.Text;
+            Date = dtpDate.Value;
             Note = txtNote.Text;
-            CategoryName = _selectedCategoryName;
-            CategoryIcon = _selectedCategoryIcon;
+            Status = chkIsDebt.Checked ? "Ghi nợ" : "Hoàn thành";
+            Icon = _selectedIcon;
 
             DialogResult = DialogResult.OK;
             Close();
@@ -300,9 +260,15 @@ namespace CofferBank
                 return false;
             }
 
-            if (string.IsNullOrWhiteSpace(_selectedCategoryName))
+            if (string.IsNullOrWhiteSpace(_selectedCategory))
             {
                 MessageBox.Show("Vui lòng chọn danh mục.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            if (chkIsDebt.Checked && string.IsNullOrWhiteSpace(txtCustomerName.Text))
+            {
+                MessageBox.Show("Vui lòng nhập tên khách hàng khi ghi nợ.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
 
