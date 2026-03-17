@@ -36,16 +36,29 @@ namespace CofferBank
         {
             _allTransactions = new List<(string, string, DateTime, decimal, bool, FontAwesome.Sharp.IconChar)>
             {
-                ("Tiền lương tháng 1", "Thu nhập", DateTime.Now.AddDays(-5), 50000000, true, FontAwesome.Sharp.IconChar.MoneyBill),
-                ("Hóa đơn điện nước", "Chi phí", DateTime.Now.AddDays(-10), 2500000, false, FontAwesome.Sharp.IconChar.Lightbulb),
-                ("Bán hàng online", "Thu nhập", DateTime.Now.AddDays(-8), 15000000, true, FontAwesome.Sharp.IconChar.ShoppingCart),
-                ("Thuê văn phòng", "Chi phí", DateTime.Now.AddDays(-15), 8000000, false, FontAwesome.Sharp.IconChar.Building),
-                ("Chiết khấu khách hàng", "Thu nhập", DateTime.Now.AddDays(-3), 5000000, true, FontAwesome.Sharp.IconChar.Percent),
-                ("Mua hàng tồn kho", "Chi phí", DateTime.Now.AddDays(-20), 25000000, false, FontAwesome.Sharp.IconChar.Boxes),
-                ("Lãi suất ngân hàng", "Thu nhập", DateTime.Now.AddDays(-12), 500000, true, FontAwesome.Sharp.IconChar.PiggyBank),
-                ("Lương nhân viên", "Chi phí", DateTime.Now.AddDays(-1), 35000000, false, FontAwesome.Sharp.IconChar.CreditCard),
-                ("Doanh thu dịch vụ", "Thu nhập", DateTime.Now.AddDays(-7), 10000000, true, FontAwesome.Sharp.IconChar.Briefcase),
-                ("Bảo trì và sửa chữa", "Chi phí", DateTime.Now.AddDays(-25), 3000000, false, FontAwesome.Sharp.IconChar.Wrench)
+                // Income Transactions - Doanh thu bán hàng
+                ("Bán 5 máy khoan pin Makita", "Doanh thu bán hàng", DateTime.Now.AddDays(-25), 7500000, true, FontAwesome.Sharp.IconChar.Store),
+                ("Bán máy cắt cỏ chính hãng", "Doanh thu bán hàng", DateTime.Now.AddDays(-20), 15000000, true, FontAwesome.Sharp.IconChar.Store),
+                ("Doanh thu bán lẻ tuần trước", "Doanh thu bán hàng", DateTime.Now.AddDays(-15), 5000000, true, FontAwesome.Sharp.IconChar.Store),
+                ("Thu nợ khách hàng cũ", "Doanh thu bán hàng", DateTime.Now.AddDays(-12), 10000000, true, FontAwesome.Sharp.IconChar.Store),
+                ("Bán buôn linh kiện điện tử", "Doanh thu bán hàng", DateTime.Now.AddDays(-8), 12500000, true, FontAwesome.Sharp.IconChar.Store),
+                ("Doanh thu từ dịch vụ sửa chữa", "Doanh thu bán hàng", DateTime.Now.AddDays(-5), 8000000, true, FontAwesome.Sharp.IconChar.Store),
+                ("Bán máy khoan hợp đồng công ty", "Doanh thu bán hàng", DateTime.Now.AddDays(-3), 22000000, true, FontAwesome.Sharp.IconChar.Store),
+                ("Hoàn tiền lỗi tính khách hàng", "Khác", DateTime.Now.AddDays(-18), 500000, true, FontAwesome.Sharp.IconChar.Briefcase),
+
+                // Expense Transactions - Nhập hàng hóa
+                ("Nhập lô máy mài góc 100 chiếc", "Nhập hàng hóa", DateTime.Now.AddDays(-28), 24000000, false, FontAwesome.Sharp.IconChar.Boxes),
+                ("Nhập linh kiện thay thế từ nhà cung cấp", "Nhập hàng hóa", DateTime.Now.AddDays(-22), 8000000, false, FontAwesome.Sharp.IconChar.Boxes),
+                ("Mua hàng tồn kho máy khoan pin", "Nhập hàng hóa", DateTime.Now.AddDays(-16), 15000000, false, FontAwesome.Sharp.IconChar.Boxes),
+                ("Nhập máy cắt cỏ từ NCC", "Nhập hàng hóa", DateTime.Now.AddDays(-10), 18000000, false, FontAwesome.Sharp.IconChar.Boxes),
+
+                // Expense Transactions - Chi phí hoạt động
+                ("Chi phí quảng cáo Facebook tháng 3", "Chi phí hoạt động", DateTime.Now.AddDays(-27), 2000000, false, FontAwesome.Sharp.IconChar.Bullhorn),
+                ("Chi phí vận chuyển hàng cho khách", "Chi phí hoạt động", DateTime.Now.AddDays(-14), 1500000, false, FontAwesome.Sharp.IconChar.Truck),
+                ("Thanh toán tiền điện kho bãi", "Chi phí hoạt động", DateTime.Now.AddDays(-9), 850000, false, FontAwesome.Sharp.IconChar.Lightbulb),
+                ("Sửa chữa thiết bị máy khoan", "Chi phí hoạt động", DateTime.Now.AddDays(-6), 3000000, false, FontAwesome.Sharp.IconChar.Wrench),
+                ("Chi phí phí bảo hiểm kinh doanh", "Chi phí hoạt động", DateTime.Now.AddDays(-2), 5000000, false, FontAwesome.Sharp.IconChar.FileInvoiceDollar),
+                ("Chi phí vệ sinh và bảo trì văn phòng", "Chi phí hoạt động", DateTime.Now.AddDays(-1), 1200000, false, FontAwesome.Sharp.IconChar.Broom)
             };
         }
 
@@ -53,8 +66,10 @@ namespace CofferBank
         {
             cboType.Items.Clear();
             cboType.Items.Add("Tất cả");
-            cboType.Items.Add("Khoản Thu");
-            cboType.Items.Add("Khoản Chi");
+            cboType.Items.Add("Doanh thu bán hàng");
+            cboType.Items.Add("Nhập hàng hóa");
+            cboType.Items.Add("Chi phí hoạt động");
+            cboType.Items.Add("Khác");
             cboType.SelectedIndex = 0;
         }
 
@@ -81,9 +96,7 @@ namespace CofferBank
                         return false;
 
                     // Type filter
-                    if (selectedType == "Khoản Thu" && !t.IsIncome)
-                        return false;
-                    if (selectedType == "Khoản Chi" && t.IsIncome)
+                    if (selectedType != "Tất cả" && t.Type != selectedType)
                         return false;
 
                     // Date range filter
