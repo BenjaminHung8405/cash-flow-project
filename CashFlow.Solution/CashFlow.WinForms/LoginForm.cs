@@ -20,6 +20,8 @@ namespace CashFlow.WinForms
             string user = txtUsername.Text;
             string pass = txtPassword.Text;
 
+
+
             // Kiểm tra rỗng
             if (string.IsNullOrEmpty(user) || string.IsNullOrEmpty(pass))
             {
@@ -39,6 +41,11 @@ namespace CashFlow.WinForms
             {
                 MessageBox.Show("Sai tài khoản hoặc mật khẩu!", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void LoginForm_Load(object sender, EventArgs e)
+        {
+            AcceptButton = btnLogin;
         }
     }
 }

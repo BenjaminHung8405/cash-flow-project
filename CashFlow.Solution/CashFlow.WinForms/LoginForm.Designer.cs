@@ -28,23 +28,35 @@
         /// </summary>
         private void InitializeComponent()
         {
+            panel1 = new Panel();
             tableLayoutPanel1 = new TableLayoutPanel();
             tableLayoutPanel2 = new TableLayoutPanel();
             label1 = new Label();
             iconPictureBox1 = new FontAwesome.Sharp.IconPictureBox();
             tableLayoutPanel3 = new TableLayoutPanel();
-            panel1 = new Panel();
+            panel2 = new Panel();
             tableLayoutPanel4 = new TableLayoutPanel();
             txtPassword = new TextBox();
             txtUsername = new TextBox();
             btnLogin = new FontAwesome.Sharp.IconButton();
+            panel1.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)iconPictureBox1).BeginInit();
             tableLayoutPanel3.SuspendLayout();
-            panel1.SuspendLayout();
+            panel2.SuspendLayout();
             tableLayoutPanel4.SuspendLayout();
             SuspendLayout();
+            // 
+            // panel1
+            // 
+            panel1.BackColor = Color.White;
+            panel1.Controls.Add(tableLayoutPanel1);
+            panel1.Dock = DockStyle.Fill;
+            panel1.Location = new Point(16, 16);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(468, 368);
+            panel1.TabIndex = 0;
             // 
             // tableLayoutPanel1
             // 
@@ -53,13 +65,13 @@
             tableLayoutPanel1.Controls.Add(tableLayoutPanel2, 0, 0);
             tableLayoutPanel1.Controls.Add(tableLayoutPanel3, 0, 1);
             tableLayoutPanel1.Dock = DockStyle.Fill;
-            tableLayoutPanel1.Location = new Point(16, 16);
+            tableLayoutPanel1.Location = new Point(0, 0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 2;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 30F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 70F));
             tableLayoutPanel1.Size = new Size(468, 368);
-            tableLayoutPanel1.TabIndex = 0;
+            tableLayoutPanel1.TabIndex = 1;
             // 
             // tableLayoutPanel2
             // 
@@ -110,7 +122,7 @@
             tableLayoutPanel3.ColumnCount = 1;
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 30F));
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 70F));
-            tableLayoutPanel3.Controls.Add(panel1, 0, 0);
+            tableLayoutPanel3.Controls.Add(panel2, 0, 0);
             tableLayoutPanel3.Controls.Add(btnLogin, 0, 1);
             tableLayoutPanel3.Dock = DockStyle.Fill;
             tableLayoutPanel3.Location = new Point(3, 113);
@@ -121,15 +133,15 @@
             tableLayoutPanel3.Size = new Size(462, 252);
             tableLayoutPanel3.TabIndex = 1;
             // 
-            // panel1
+            // panel2
             // 
-            panel1.Controls.Add(tableLayoutPanel4);
-            panel1.Dock = DockStyle.Fill;
-            panel1.Location = new Point(3, 3);
-            panel1.Name = "panel1";
-            panel1.Padding = new Padding(24);
-            panel1.Size = new Size(456, 120);
-            panel1.TabIndex = 0;
+            panel2.Controls.Add(tableLayoutPanel4);
+            panel2.Dock = DockStyle.Fill;
+            panel2.Location = new Point(3, 3);
+            panel2.Name = "panel2";
+            panel2.Padding = new Padding(24);
+            panel2.Size = new Size(456, 120);
+            panel2.TabIndex = 0;
             // 
             // tableLayoutPanel4
             // 
@@ -189,37 +201,39 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.White;
+            BackColor = SystemColors.Control;
             ClientSize = new Size(500, 400);
-            Controls.Add(tableLayoutPanel1);
+            Controls.Add(panel1);
             FormBorderStyle = FormBorderStyle.None;
             Name = "LoginForm";
             Padding = new Padding(16);
             StartPosition = FormStartPosition.CenterScreen;
             Text = "LoginForm";
+            Load += LoginForm_Load;
+            panel1.ResumeLayout(false);
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel2.ResumeLayout(false);
             tableLayoutPanel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)iconPictureBox1).EndInit();
             tableLayoutPanel3.ResumeLayout(false);
-            panel1.ResumeLayout(false);
+            panel2.ResumeLayout(false);
             tableLayoutPanel4.ResumeLayout(false);
             tableLayoutPanel4.PerformLayout();
             ResumeLayout(false);
         }
 
         #endregion
-
+        private TextBox textBox2;
+        private Panel panel1;
         private TableLayoutPanel tableLayoutPanel1;
         private TableLayoutPanel tableLayoutPanel2;
         private Label label1;
         private FontAwesome.Sharp.IconPictureBox iconPictureBox1;
         private TableLayoutPanel tableLayoutPanel3;
-        private Panel panel1;
+        private Panel panel2;
         private TableLayoutPanel tableLayoutPanel4;
-        private TextBox textBox2;
-        private TextBox txtUsername;
         private TextBox txtPassword;
+        private TextBox txtUsername;
         private FontAwesome.Sharp.IconButton btnLogin;
     }
 }
