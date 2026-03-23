@@ -15,13 +15,16 @@ namespace CashFlow.WinForms
             cbMenu.Items.Add("Phiếu Chi");
             cbMenu.Items.Add("Báo cáo");
             cbMenu.SelectedIndexChanged += CbMenu_SelectedIndexChanged;
+
+            // Set default selected item to "Tổng quan" (index 0)
+            cbMenu.SelectedIndex = 0;
         }
 
-        private void CbMenu_SelectedIndexChanged(object sender, EventArgs e)
+        private void CbMenu_SelectedIndexChanged(object? sender, EventArgs e)
         {
             if (cbMenu.SelectedItem != null)
             {
-                string selectedItem = cbMenu.SelectedItem.ToString();
+                string selectedItem = cbMenu.SelectedItem.ToString() ?? string.Empty;
                 switch (selectedItem)
                 {
                     case "Tổng quan":
