@@ -55,28 +55,10 @@ namespace CashFlow.API.Modules.Auth.Services
 
                 // 1. Tạo Tenant mới
                 var newTenantId = Guid.NewGuid();
-                var newTenant = new Tenant
-                {
-                    Id = newTenantId,
-                    CompanyName = request.companyName,
-                    IsActive = true
-                };
-                _efContext.Tenants.Add(newTenant);
-
-                // 2. Tạo Role "Admin" cho Tenant mới
                 var adminRoleId = Guid.NewGuid();
-                var adminRole = new Role
-                {
-                    Id = adminRoleId,
-                    TenantId = newTenantId,
-                    RoleName = "Admin",
-                    Description = "Tenant Administrator",
-                    IsActive = true
-                };
-                _efContext.Roles.Add(adminRole);
-
                 // 3. Tạo User và liên kết
                 var userId = Guid.NewGuid();
+
                 var newUser = new User
                 {
                     Id = userId,
@@ -89,6 +71,26 @@ namespace CashFlow.API.Modules.Auth.Services
                 };
                 _efContext.Users.Add(newUser);
 
+                var newTenant = new Tenant
+                {
+                    Id = newTenantId,
+                    CompanyName = request.companyName,
+                    IsActive = true
+                };
+                _efContext.Tenants.Add(newTenant);
+
+                // 2. Tạo Role "Admin" cho Tenant mới
+                var adminRole = new Role
+                {
+                    Id = adminRoleId,
+                    TenantId = newTenantId,
+                    RoleName = "Admin",
+                    Description = "Tenant Administrator",
+                    IsActive = true
+                };
+                _efContext.Roles.Add(adminRole);
+
+            
                 // Lưu thay đổi vào DB
                 await _efContext.SaveChangesAsync();
 

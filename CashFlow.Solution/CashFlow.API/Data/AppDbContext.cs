@@ -177,19 +177,6 @@ namespace CashFlow.API.Data
             var entityType = entry.Entity.GetType();
             var tableName = entityType.Name;
 
-            // Get the primary key value
-            var primaryKey = entry.Metadata.FindPrimaryKey();
-            string recordId = "Unknown";
-
-            if (primaryKey != null)
-            {
-                var keyProperties = primaryKey.Properties;
-                if (keyProperties.Count == 1)
-                {
-                    recordId = entry.CurrentValues[keyProperties[0].Name]?.ToString() ?? "Unknown";
-                }
-            }
-
             // Determine action
             string action = entry.State switch
             {
@@ -205,20 +192,44 @@ namespace CashFlow.API.Data
                 return null;
             }
 
+            var resolvedTenantId = ResolveTenantIdForAudit(entry, tenantId);
+            if (resolvedTenantId == Guid.Empty)
+            {
+                return null;
+            }
+
+            // Get the primary key value
+            var primaryKey = entry.Metadata.FindPrimaryKey();
+            string recordId = "Unknown";
+
+            if (primaryKey != null)
+            {
+                var keyProperties = primaryKey.Properties;
+                if (keyProperties.Count == 1)
+                {
+                    var keyName = keyProperties[0].Name;
+                    var keyValue = entry.State == EntityState.Deleted
+                        ? entry.OriginalValues[keyName]
+                        : entry.CurrentValues[keyName];
+
+                    recordId = keyValue?.ToString() ?? "Unknown";
+                }
+            }
+
             // Get old and new values
             string oldValues = entry.State == EntityState.Deleted || entry.State == EntityState.Modified
                 ? SerializeValues(entry.OriginalValues)
-                : null;
+                : "{}";
 
             string newValues = entry.State == EntityState.Added || entry.State == EntityState.Modified
                 ? SerializeValues(entry.CurrentValues)
-                : null;
+                : "{}";
 
             // Create and return the audit log
             return new AuditLog
             {
                 Id = Guid.NewGuid(),
-                TenantId = tenantId,
+                TenantId = resolvedTenantId,
                 UserId = userId ?? "System",
                 Action = action,
                 TableName = tableName,
@@ -227,6 +238,39 @@ namespace CashFlow.API.Data
                 NewValues = newValues,
                 Timestamp = timestamp
             };
+        }
+
+        private Guid ResolveTenantIdForAudit(EntityEntry entry, Guid fallbackTenantId)
+        {
+            if (entry.Entity is Tenant tenant)
+            {
+                return tenant.Id;
+            }
+
+            if (entry.Entity is BaseTenantEntity tenantEntity && tenantEntity.TenantId != Guid.Empty)
+            {
+                return tenantEntity.TenantId;
+            }
+
+            var tenantProperty = entry.Metadata.FindProperty(nameof(BaseTenantEntity.TenantId));
+            if (tenantProperty != null)
+            {
+                var value = entry.State == EntityState.Deleted
+                    ? entry.OriginalValues[tenantProperty.Name]
+                    : entry.CurrentValues[tenantProperty.Name] ?? entry.OriginalValues[tenantProperty.Name];
+
+                if (value is Guid guidValue && guidValue != Guid.Empty)
+                {
+                    return guidValue;
+                }
+
+                if (Guid.TryParse(value?.ToString(), out var parsedGuid) && parsedGuid != Guid.Empty)
+                {
+                    return parsedGuid;
+                }
+            }
+
+            return fallbackTenantId;
         }
 
         /// <summary>
