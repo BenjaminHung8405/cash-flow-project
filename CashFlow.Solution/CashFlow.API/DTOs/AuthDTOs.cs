@@ -8,10 +8,10 @@ namespace CashFlow.API.DTOs
     public class LoginRequest
     {
         [Required(ErrorMessage = "Username is required")]
-        public string Username { get; set; }
+        public string Username { get; set; } = null!;
 
         [Required(ErrorMessage = "Password is required")]
-        public string Password { get; set; }
+        public string Password { get; set; } = null!;
     }
 
     /// <summary>
@@ -19,9 +19,9 @@ namespace CashFlow.API.DTOs
     /// </summary>
     public class LoginResponse
     {
-        public string Token { get; set; }
-        public string FullName { get; set; }
-        public string Role { get; set; }
+        public string Token { get; set; } = null!;
+        public string FullName { get; set; } = null!;
+        public string Role { get; set; } = null!;
         public int UserId { get; set; }
         public int TenantId { get; set; }
     }

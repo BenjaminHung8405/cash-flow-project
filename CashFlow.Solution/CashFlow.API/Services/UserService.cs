@@ -45,7 +45,8 @@ namespace CashFlow.API.Services
                         INNER JOIN Roles r ON u.RoleId = r.RoleId
                         WHERE u.UserId = @UserId";
 
-                    return await conn.QueryFirstOrDefaultAsync<UserViewModel>(sql, new { UserId = userId });
+                    var user = await conn.QueryFirstOrDefaultAsync<UserViewModel>(sql, new { UserId = userId });
+                    return user ?? throw new InvalidOperationException($"User with ID {userId} not found");
                 }
             }
             catch (Exception ex)

@@ -10,16 +10,16 @@ namespace CashFlow.API.DTOs
     {
         [Required(ErrorMessage = "Username is required")]
         [StringLength(50, ErrorMessage = "Username must not exceed 50 characters")]
-        public string Username { get; set; }
+        public string Username { get; set; } = null!;
 
         [Required(ErrorMessage = "Password is required")]
         [StringLength(100, MinimumLength = 6,
             ErrorMessage = "Password must be between 6 and 100 characters")]
-        public string Password { get; set; }
+        public string Password { get; set; } = null!;
 
         [Required(ErrorMessage = "Full name is required")]
         [StringLength(100, ErrorMessage = "Full name must not exceed 100 characters")]
-        public string FullName { get; set; }
+        public string FullName { get; set; } = null!;
 
         [Required(ErrorMessage = "Role is required")]
         public int RoleId { get; set; }
@@ -38,7 +38,7 @@ namespace CashFlow.API.DTOs
     {
         [Required(ErrorMessage = "Full name is required")]
         [StringLength(100, ErrorMessage = "Full name must not exceed 100 characters")]
-        public string FullName { get; set; }
+        public string FullName { get; set; } = null!;
 
         [Required(ErrorMessage = "Role is required")]
         public int RoleId { get; set; }
@@ -54,10 +54,10 @@ namespace CashFlow.API.DTOs
     public class UserViewModel
     {
         public int UserId { get; set; }
-        public string Username { get; set; }
-        public string FullName { get; set; }
+        public string Username { get; set; } = null!;
+        public string FullName { get; set; } = null!;
         public int RoleId { get; set; }
-        public string RoleName { get; set; }
+        public string RoleName { get; set; } = null!;
         public int TenantId { get; set; }
         public int? BranchId { get; set; }
         public bool IsActive { get; set; }
