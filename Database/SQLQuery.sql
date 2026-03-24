@@ -44,7 +44,6 @@ CREATE TABLE Users (
     Username VARCHAR(50) NOT NULL,
     PasswordHash VARCHAR(500) NOT NULL,     -- Lưu mật khẩu đã mã hóa
     FullName NVARCHAR(100),
-    Email VARCHAR(100),
     IsActive BIT DEFAULT 1,
     FOREIGN KEY (TenantId) REFERENCES Tenants(TenantId),
     FOREIGN KEY (BranchId) REFERENCES Branches(BranchId),
